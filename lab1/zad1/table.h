@@ -8,9 +8,9 @@ typedef struct {
   int is_static;
 } Table;
 
-Table * create_table(size_t length, size_t block_size, int is_static);
-void delete_table(Table * table);
-void add_block(Table * table, size_t index, char * block);
-void delete_block(Table * table, size_t index);
-size_t block_sum(char * block);
-size_t search_block(Table * table, size_t char_sum);
+Table * create_table(size_t, size_t, int);
+void delete_table(Table *);
+void add_block(Table *, size_t, char *);
+void delete_block(Table *, size_t);
+size_t block_sum(char *, size_t);
+size_t search_block(Table *, size_t);

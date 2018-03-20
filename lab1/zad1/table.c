@@ -75,27 +75,27 @@ void delete_block(Table * table, size_t index) {
 
 }
 
-size_t block_sum(char * block) {
-  size_t n = strlen(block);
+size_t block_sum(char * block, size_t size) {
   size_t sum = 0;
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < size; i++) {
     sum += block[i];    
   }
+  printf("sum: %ld\n", sum);
 
   return sum;
 }
 
 // returns index of block with similar sum
 size_t search_block(Table * table, size_t sum) {
-  size_t diff = table->block_size * 'z'; 
+  size_t diff = table->block_size * 'Z'; 
   size_t index = 0;
   size_t temp_diff = 0;
 
   for (size_t b = 0; b < table->length; b++) {
     if (!table->is_static) {
-      temp_diff = block_sum(table->blocks[b]) - sum;
+      temp_diff = block_sum(table->blocks[b], table->block_size) - sum;
     } else {
-      temp_diff = block_sum(static_table[b]);
+      temp_diff = block_sum(static_table[b], table->block_size);
     }
 
     if (abs(temp_diff) < diff) {
