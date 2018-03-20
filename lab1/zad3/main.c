@@ -23,16 +23,21 @@ typedef struct {
 } Timing;
 
 void print_usage();
-char * generate_block(size_t size);
-void exec_and_save(FILE * f, Table * a, char * op, int arg, void * handle);
-size_t search_element(Table * a, size_t value);
-void remove_block(Table * a, size_t number);
-void add_blocks(Table * a, size_t number);
-void remove_blocks(Table * a, size_t number);
+void exec_and_save(FILE *, Table *, char *, int);
+void block_del(Table *, size_t);
+void block_add(Table *, size_t);
+char * block_gen(size_t);
+Table * table_create(size_t, size_t, int);
+
+size_t search(Table *, size_t);
+void change(Table *, size_t);
+void alt_change(Table *, size_t);
 
 Timing get_timing();
-void end_timing(Timing * t);
-void save_timing(FILE * f, Timing * t);
+void end_timing(Timing *);
+void save_timing(FILE *, Timing *);
+
+void * handle;
 
 int main(int argc, char** argv) {
  
@@ -67,7 +72,7 @@ int main(int argc, char** argv) {
   size_t arg = 0; 
 
   #ifdef DYNAMIC
-    void *handle = dlopen("../zad1/table.so", RTLD_LAZY);
+    handle = dlopen("../zad1/table.so", RTLD_LAZY);
     if (!handle) {
       fprintf(stderr, "Failed to open dynamic library.\n");
       return -1;
@@ -78,11 +83,8 @@ int main(int argc, char** argv) {
   report = fopen("raport2.txt", "a");
 
   Timing t = get_timing();
-  Table * a = create_table(len, size, is_static);
-  for (size_t i = 0; i < a->length; i++) {
-    char * block = generate_block(a->block_size);
-    add_block(a, i, block);
-  }
+  Table * a = table_create(len, size, is_static);
+
   end_timing(&t);
   fprintf(report, "Creating table with parameters:\n"
           "length: %ld, block size: %ld, alocation method: %s\n",
@@ -97,6 +99,7 @@ int main(int argc, char** argv) {
     exec_and_save(report, a, operation, arg);
   }
 
+  dlclose(handle);
   fclose(report);
   fprintf(report, "\n-------------------------------------------------\n");
 
@@ -114,38 +117,25 @@ void print_usage() {
          "    * alt_change number - remove then add one block number times.\n");
 }
 
-char * generate_block(size_t size) {
-  char * block = calloc(size, sizeof(char));
-  for (size_t i = 0; i < size; i++) {
-    block[i] = rand() % ('z' - 'A') + 'A' + 1;Table * a = create_table(len, size, is_static);
-  
-  return block;
-}
-
-void exec_and_save(FILE * f, Table * a, char * op, int arg, void * handle) {
+void exec_and_save(FILE * f, Table * a, char * op, int arg) {
   Timing t;
   if (strcmp(op, "search") == 0) {
     fprintf(f, "\nSearch for element with sum: %d\n", arg);
     t = get_timing();
-    // TU POPRAWNIC size_t i = search(;
+    size_t i = search(a, arg);
     end_timing(&t);
     save_timing(f, &t);
-    fprintf(f, "Element found on index: %ld, with sum %ld.\n", i, block_sum(a->blocks[i]));
+    fprintf(f, "Element found on index: %ld, with sum %ld.\n", i, /*block_sum(a->blocks[i]*/6);
   } else if (strcmp(op, "change") == 0) {
     fprintf(f, "\nRemove element from index: %d\n", arg);
     t = get_timing();
-    remove_blocks(a, arg);
-    add_blocks(a, arg);
+    change(a, arg);
     end_timing(&t);
     save_timing(f, &t);
   } else if (strcmp(op, "alt_change") == 0) {
     fprintf(f, "\nAdd element to index: %d\n", arg);
-    char * block = generate_block(a->block_size);
     t = get_timing();
-    for (size_t b = 0; b < arg; b++) {
-      delete_block(a, 0);
-      add_block(a, 0, block);
-    }
+    alt_change(a, arg);
     end_timing(&t);
     save_timing(f, &t);
   } else {
@@ -153,42 +143,89 @@ void exec_and_save(FILE * f, Table * a, char * op, int arg, void * handle) {
   }
 }
 
-void remove_blocks(Table * a, size_t number) {
-  if (number > a->length) {
-    fprintf(stderr, "Error. Blocks number cannot be greater than table length.\n");
-    return;
+Table * table_create(size_t length, size_t block_size, int is_static) {
+  Table * a;
+  #ifdef DYNAMIC
+    Table * (*create_table)(size_t, size_t, int);
+    create_table = (Table * (*) (size_t, size_t, int)) dlsym(handle, "create_table");
+    a = (*create_table)(length, block_size, is_static);
+  #endif
+  
+  #ifndef DYNAMIC
+    a = create_table(length, block_size, is_static);
+  #endif
+
+  for (size_t i = 0; i < a->length; ++i) {
+    block_add(a, i);
+  }
+
+  return a;
+}
+
+void block_del(Table * a, size_t index) {
+  #ifdef DYNAMIC
+    void (*delete_block)(Table *, size_t);
+    delete_block = (void (*) (Table *, size_t)) dlsym(handle, "delete_block");
+    (*delete_block)(a, index);
+  #endif
+  
+  #ifndef DYNAMIC
+    delete_block(a, index);
+  #endif
+}
+
+void block_add(Table * a, size_t index) {
+  char *  block = block_gen(a->block_size);
+  #ifdef DYNAMIC
+    void (*add_block)(Table *, size_t, char *);
+    add_block = (void (*) (Table *, size_t, char *)) dlsym(handle, "add_block");
+    (*add_block)(a, index, block);
+  #endif
+  
+  #ifndef DYNAMIC
+    add_block(a, index, block);
+  #endif
+}
+
+size_t search(Table * a, size_t sum) {
+  #ifdef DYNAMIC
+    size_t (*search_block)(Table *, size_t);
+    search_block = (size_t (*) (Table *, size_t)) dlsym(handle, "search_block");
+    return (*search_block)(a, sum);
+  #endif
+
+  #ifndef DYNAMIC
+    return search_block(a, sum);
+  #endif
+}
+
+char * block_gen(size_t size) {
+  char * block = calloc(size, sizeof(char));
+  for (size_t i = 0; i < size; i++) {
+    block[i] = rand() % ('z' - 'A') + 'A' + 1;
+  }
+
+  return block;
+}
+
+void change(Table * a, size_t number) {
+  for (size_t b = 0; b < number; b++) {
+    block_del(a, b);
   }
 
   for (size_t b = 0; b < number; b++) {
-    delete_block(a, number);
+    block_add(a, b);
   }
 }
 
-void add_blocks(Table * a, size_t number, void * handle) {
-  if (number > a->length) {
-    fprintf(stderr, "Error. Blocks number cannot be greater than table length.\n");
-    return;
-  }
-
-  char *  block = generate_block(a->block_size);
+void alt_change(Table * a, size_t number) {
   for (size_t b = 0; b < number; b++) {
-    #ifdef DYNAMIC
-      //()
-    #endif
-    add_block(a, number, block);
+    block_add(a, b);
   }
-}
-
-void time_check(Timing * t) {
-  clock_t curr;
-  struct rusage curr_ru;
-
-  curr = clock();
-  getrusage(RUSAGE_SELF, &curr_ru);
-  printf("  real: %.6f, user: %.6f, system: %.6f\n",
-    (double)(curr) / CLOCKS_PER_SEC,
-    curr_ru.ru_utime.tv_sec + curr_ru.ru_utime.tv_usec / 10e6,
-    curr_ru.ru_stime.tv_sec + curr_ru.ru_stime.tv_usec / 10e6);
+  
+  for (size_t b = 0; b < number; b++) {
+    block_del(a, 0);
+  }
 }
 
 Timing get_timing() {
