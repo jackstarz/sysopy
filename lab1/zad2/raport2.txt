@@ -1,0 +1,21 @@
+Creating table with parameters:
+length: 10000, block size: 512, alocation method: dynamic
+  real: 0.094333, user: 0.007995, system: 0.001438
+
+Search for element with sum: 20000
+  real: 0.015141, user: 0.001514, system: 0.000000
+Element found on index: 6905, with sum 46520.
+Creating table with parameters:
+length: 100000, block size: 512, alocation method: dynamic
+  real: 8.760820, user: 1.018221, system: 7.057860
+
+Search for element with sum: 200000
+  real: 4.091946, user: 0.069142, system: 3.040052
+Element found on index: 0, with sum 48654.
+
+Creating table with parameters:
+length: 100000, block size: 512, alocation method: dynamic
+  real: 3.228142, user: 1.009982, system: 2.012833
+
+Remove element from index: 2000
+  real: 0.154841, user: 0.002286, system: 0.013198
