@@ -36,8 +36,6 @@ void save_timing(FILE * f, Timing * t);
 
 int main(int argc, char** argv) {
  
-  printf("tu spokos");
-
   if (argc < 4) {
     print_usage();
     return -1;
@@ -154,6 +152,7 @@ void remove_blocks(Table * a, size_t number) {
   }
 
   for (size_t b = 0; b < number; b++) {
+
     delete_block(a, number);
   }
 }
