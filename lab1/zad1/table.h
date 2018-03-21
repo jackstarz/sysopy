@@ -12,5 +12,5 @@ Table * create_table(size_t, size_t, int);
 void delete_table(Table *);
 void add_block(Table *, size_t, char *);
 void delete_block(Table *, size_t);
-size_t block_sum(char *, size_t);
+size_t block_sum(Table *, size_t);
 size_t search_block(Table *, size_t);

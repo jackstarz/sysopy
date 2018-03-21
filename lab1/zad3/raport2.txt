@@ -1,47 +1,27 @@
 Creating table with parameters:
-length: 10000, block size: 512, alocation method: dynamic
-  real: 0.091734, user: 0.006430, system: 0.002743
+length: 50000, block size: 500, alocation method: dynamic
+  real: 0.417554, user: 0.031422, system: 0.010333
 
-Search for element with sum: 20000
-  real: 0.014845, user: 0.001484, system: 0.000000
-Element found on index: 6905, with sum 6.
+Removing 10000 elements, then adding new ones
+  real: 0.742989, user: 0.016181, system: 0.058118
+
+-------------------------------------------------
+
 Creating table with parameters:
-length: 10000, block size: 512, alocation method: dynamic
-  real: 0.095004, user: 0.006353, system: 0.003147
+length: 50000, block size: 500, alocation method: dynamic
+  real: 0.418691, user: 0.034484, system: 0.007385
 
-Remove element from index: 2000
-  real: 0.155655, user: 0.005785, system: 0.009780
+Removing 10000 elements, then adding new ones
+  real: 0.672242, user: 0.013838, system: 0.053386
+
+-------------------------------------------------
+
 Creating table with parameters:
-length: 10000, block size: 512, alocation method: static
-  real: 0.072233, user: 0.006793, system: 0.000429
+length: 50000, block size: 500, alocation method: dynamic
+  real: 0.428357, user: 0.031182, system: 0.011653
 
-Remove element from index: 2000
-  real: 0.012846, user: 0.001285, system: 0.000000
-Creating table with parameters:
-length: 10000, block size: 512, alocation method: static
-  real: 0.069174, user: 0.006261, system: 0.000655
+Removing 10000 elements, then adding new ones
+  real: 0.661881, user: 0.019433, system: 0.046755
 
-Search for element with sum: 2000
-  real: 0.038810, user: 0.002520, system: 0.001361
-Element found on index: 0, with sum 6.
-Creating table with parameters:
-length: 10000, block size: 512, alocation method: static
-  real: 0.073280, user: 0.006831, system: 0.000497
+-------------------------------------------------
 
-Search for element with sum: 2000
-  real: 0.038862, user: 0.001862, system: 0.002025
-Element found on index: 0, with sum 6.
-Creating table with parameters:
-length: 10000, block size: 512, alocation method: static
-  real: 0.069947, user: 0.006518, system: 0.000476
-
-Search for element with sum: 2000
-  real: 0.037629, user: 0.002095, system: 0.001668
-Element found on index: 0, with sum 6.
-Creating table with parameters:
-length: 10000, block size: 512, alocation method: static
-  real: 0.068528, user: 0.006011, system: 0.000841
-
-Search for element with sum: 2000
-  real: 0.037913, user: 0.000864, system: 0.002928
-Element found on index: 0, with sum 6.

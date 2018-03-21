@@ -4,12 +4,13 @@
 #include <stddef.h>
 #include <string.h>
 
-#define LENGTH 10000
-#define BLOCK_SIZE 512
+#define LENGTH 1000000
+#define BLOCK_SIZE 1000
 
 char static_table [LENGTH][BLOCK_SIZE];
 
 Table * create_table(size_t length, size_t block_size, int is_static) {
+
   Table * table = (Table *) calloc(length, sizeof(Table));
   if (!table) {
     fprintf(stderr, "Table creating failed.\n");
@@ -17,14 +18,11 @@ Table * create_table(size_t length, size_t block_size, int is_static) {
   }
 
   table->is_static = is_static;
-
+  table->length = length;
+  table->block_size = block_size;
+  
   if (!is_static) {
-      table->length = length;
-      table->block_size = block_size;
-      table->blocks = calloc(length, block_size);
-  } else {
-    table->length = LENGTH;
-    table->block_size = BLOCK_SIZE;
+    table->blocks = calloc(length, block_size);
   }
 
   return table;
@@ -69,40 +67,48 @@ void delete_block(Table * table, size_t index) {
     free(table->blocks[index]);
     table->blocks[index] = NULL;
   } else {
-    // ??
     static_table[index][0] = 0;
   }
 
 }
 
-size_t block_sum(char * block, size_t size) {
+size_t block_sum(Table * table, size_t index) {
   size_t sum = 0;
-  for (size_t i = 0; i < size; i++) {
-    sum += block[i];    
+
+  for (size_t i = 0; i < table->block_size; i++) {
+    if (table->is_static) {
+      sum += static_table[index][i];
+    } else {
+      sum += table->blocks[index][i];    
+    }
   }
-  printf("sum: %ld\n", sum);
 
   return sum;
 }
 
 // returns index of block with similar sum
-size_t search_block(Table * table, size_t sum) {
+size_t search_block(Table * table, size_t index) {
   size_t diff = table->block_size * 'Z'; 
-  size_t index = 0;
+  size_t best_index = 0;
   size_t temp_diff = 0;
+  size_t sum = block_sum(table, index);
 
   for (size_t b = 0; b < table->length; b++) {
+    if (b == index) {
+      continue;
+    }
+
     if (!table->is_static) {
-      temp_diff = block_sum(table->blocks[b], table->block_size) - sum;
+      temp_diff = block_sum(table, b) - sum;
     } else {
-      temp_diff = block_sum(static_table[b], table->block_size);
+      temp_diff = block_sum(table, b) - sum;
     }
 
     if (abs(temp_diff) < diff) {
       diff = temp_diff;
-      index = b;
+      best_index = b;
     }
   } 
 
-  return index;
+  return best_index;
 }

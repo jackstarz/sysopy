@@ -30,6 +30,7 @@ char * block_gen(size_t);
 Table * table_create(size_t, size_t, int);
 
 size_t search(Table *, size_t);
+size_t sum(Table *, size_t);
 void change(Table *, size_t);
 void alt_change(Table *, size_t);
 
@@ -83,6 +84,7 @@ int main(int argc, char** argv) {
   report = fopen("raport2.txt", "a");
 
   Timing t = get_timing();
+  srand(time(NULL));
   Table * a = table_create(len, size, is_static);
 
   end_timing(&t);
@@ -99,9 +101,12 @@ int main(int argc, char** argv) {
     exec_and_save(report, a, operation, arg);
   }
 
-  dlclose(handle);
+  #ifdef DYNAMIC
+    dlclose(handle);
+  #endif
+
+  fprintf(report, "-------------------------------------------------\n\n");
   fclose(report);
-  fprintf(report, "\n-------------------------------------------------\n");
 
   return 0;
 }
@@ -120,20 +125,20 @@ void print_usage() {
 void exec_and_save(FILE * f, Table * a, char * op, int arg) {
   Timing t;
   if (strcmp(op, "search") == 0) {
-    fprintf(f, "\nSearch for element with sum: %d\n", arg);
+    fprintf(f, "Search for element with sum of element from index %d (%ld)\n", arg, sum(a, arg));
     t = get_timing();
     size_t i = search(a, arg);
     end_timing(&t);
     save_timing(f, &t);
-    fprintf(f, "Element found on index: %ld, with sum %ld.\n", i, /*block_sum(a->blocks[i]*/6);
+    fprintf(f, "Element found on index: %ld, with sum %ld.\n\n", i, sum(a, i));
   } else if (strcmp(op, "change") == 0) {
-    fprintf(f, "\nRemove element from index: %d\n", arg);
+    fprintf(f, "Removing %d elements, then adding new ones\n", arg);
     t = get_timing();
     change(a, arg);
     end_timing(&t);
     save_timing(f, &t);
   } else if (strcmp(op, "alt_change") == 0) {
-    fprintf(f, "\nAdd element to index: %d\n", arg);
+    fprintf(f, "Remove one element, then add new one %d times\n", arg);
     t = get_timing();
     alt_change(a, arg);
     end_timing(&t);
@@ -199,6 +204,18 @@ size_t search(Table * a, size_t sum) {
   #endif
 }
 
+size_t sum(Table * a, size_t i) {
+  #ifdef DYNAMIC
+    size_t (*block_sum)(Table *, size_t);
+    block_sum = (size_t (*) (Table *, size_t)) dlsym(handle, "block_sum");
+    return (*block_sum)(a, i);
+  #endif
+
+  #ifndef DYNAMIC
+    return block_sum(a, i);
+  #endif
+}
+
 char * block_gen(size_t size) {
   char * block = calloc(size, sizeof(char));
   for (size_t i = 0; i < size; i++) {
@@ -253,7 +270,7 @@ void end_timing(Timing * t) {
 }
 
 void save_timing(FILE * f, Timing * t) {
-  fprintf(f, "  real: %.6f, user: %.6f, system: %.6f\n",
+  fprintf(f, "  real: %.6f, user: %.6f, system: %.6f\n\n",
          (double) t->real / CLOCKS_PER_SEC,
          t->user.tv_sec + t->user.tv_usec / 10e6,
          t->system.tv_sec + t->system.tv_usec / 10e6);
