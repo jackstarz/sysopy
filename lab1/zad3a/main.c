@@ -31,8 +31,8 @@ Table * table_create(size_t, size_t, int);
 
 size_t search(Table *, size_t);
 size_t sum(Table *, size_t);
-void change(Table *, size_t);
-void alt_change(Table *, size_t);
+void swap(Table *, size_t);
+void alt_swap(Table *, size_t);
 
 Timing get_timing();
 void end_timing(Timing *);
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   #endif
 
   FILE * report;
-  report = fopen("raport2.txt", "a");
+  report = fopen("raport3a.txt", "a");
 
   Timing t = get_timing();
   srand(time(NULL));
@@ -118,8 +118,8 @@ void print_usage() {
          "  alocation - alocation type [s|d] s - static, d - dynamic.\n"
          "  operation - operation to execute. \n"
          "    * search value - search block of sum similar to value.\n"      
-         "    * change value - remove value blocks, then add new ones.\n"
-         "    * alt_change number - remove then add one block number times.\n");
+         "    * swap value - remove value blocks, then add new ones.\n"
+         "    * alt_swap number - remove then add one block number times.\n");
 }
 
 void exec_and_save(FILE * f, Table * a, char * op, int arg) {
@@ -131,16 +131,16 @@ void exec_and_save(FILE * f, Table * a, char * op, int arg) {
     end_timing(&t);
     save_timing(f, &t);
     fprintf(f, "Element found on index: %ld, with sum %ld.\n\n", i, sum(a, i));
-  } else if (strcmp(op, "change") == 0) {
+  } else if (strcmp(op, "swap") == 0) {
     fprintf(f, "Removing %d elements, then adding new ones\n", arg);
     t = get_timing();
-    change(a, arg);
+    swap(a, arg);
     end_timing(&t);
     save_timing(f, &t);
-  } else if (strcmp(op, "alt_change") == 0) {
+  } else if (strcmp(op, "alt_swap") == 0) {
     fprintf(f, "Remove one element, then add new one %d times\n", arg);
     t = get_timing();
-    alt_change(a, arg);
+    alt_swap(a, arg);
     end_timing(&t);
     save_timing(f, &t);
   } else {
@@ -225,7 +225,7 @@ char * block_gen(size_t size) {
   return block;
 }
 
-void change(Table * a, size_t number) {
+void swap(Table * a, size_t number) {
   for (size_t b = 0; b < number; b++) {
     block_del(a, b);
   }
@@ -235,7 +235,7 @@ void change(Table * a, size_t number) {
   }
 }
 
-void alt_change(Table * a, size_t number) {
+void alt_swap(Table * a, size_t number) {
   for (size_t b = 0; b < number; b++) {
     block_add(a, b);
   }
