@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -std=c99
 SRC = ./main.c
 LIB = ../zad1
 
