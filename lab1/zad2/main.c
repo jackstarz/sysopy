@@ -23,8 +23,8 @@ void exec_and_save(FILE *, Table *, char *, int);
 void block_del(Table *, size_t);
 void block_add(Table *, size_t);
 char * block_gen(size_t);
-Table * table_create(size_t, size_t, int);
 
+Table * table_create(size_t, size_t, int);
 size_t search(Table *, size_t);
 void swap(Table *, size_t);
 void alt_swap(Table *, size_t);
@@ -37,29 +37,30 @@ int main(int argc, char** argv) {
  
   if (argc < 4) {
     print_usage();
-    return -1;
+    return EXIT_FAILURE;
   }
 
   size_t len = strtol(argv[1], 0, 10);
   if (len == 0) {
     fprintf(stderr, "Please give length as positive integer.\n");
-    return -1;
+    return EXIT_FAILURE;
   }
 
   size_t size = strtol(argv[2], 0, 10);
   if (size == 0) {
     fprintf(stderr, "Please give block size as positive integer.\n");
-    return -1;
+    return EXIT_FAILURE;
   }
 
   int is_static;
+
   if (strcmp(argv[3], "s") == 0) {
     is_static = 1;
   } else if (strcmp(argv[3], "d") == 0) {
     is_static = 0;
   } else {
     fprintf(stderr, "Please declare alocation type as s (static) or d (dynamic).\n");
-    return -1;
+    return EXIT_FAILURE;
   }
 
   char * operation = NULL;
@@ -71,7 +72,6 @@ int main(int argc, char** argv) {
   Timing t = get_timing();
   srand(time(NULL));
   Table * a = table_create(len, size, is_static);
-
   end_timing(&t);
   fprintf(report, "Creating table with parameters:\n"
           "length: %ld, block size: %ld, alocation method: %s\n",
@@ -88,7 +88,8 @@ int main(int argc, char** argv) {
 
   fprintf(report, "-------------------------------------------------\n\n");
   fclose(report);
-  
+
+  delete_table(a);  
 
   return 0;
 }

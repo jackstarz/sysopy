@@ -15,18 +15,29 @@ dynamic:
 	$(CC) $(CFLAGS) -DDYNAMIC $(SRC) -ldl -o zad3_libdynamic -O$(OLEVEL)
 
 clean:
-	rm *.o zad3_* raport3a.txt
+	rm zad3_* raport3a.txt
 	
 test:
-	./zad3_libstatic 500000 64 d search 2137
-	./zad3_libshared 500000 64 d search 2137
-	./zad3_libdynamic 500000 64 d search 2137
+	./zad3_libstatic 500000 64 d search 420
+	./zad3_libshared 500000 64 d search 420
+	./zad3_libdynamic 500000 64 d search 420
 	
+	./zad3_libstatic 500000 64 s search 420
+	./zad3_libshared 500000 64 s search 420
+	./zad3_libdynamic 500000 64 s search 420
+
 	./zad3_libstatic 500000 64 d swap 200000
 	./zad3_libshared 500000 64 d swap 200000
 	./zad3_libdynamic 500000 64 d swap 200000
+
+	./zad3_libstatic 500000 64 s swap 200000
+	./zad3_libshared 500000 64 s swap 200000
+	./zad3_libdynamic 500000 64 s swap 200000
 	
 	./zad3_libstatic 500000 64 d alt_swap 200000
 	./zad3_libshared 500000 64 d alt_swap 200000
 	./zad3_libdynamic 500000 64 d alt_swap 200000
-	
+
+	./zad3_libstatic 500000 64 s alt_swap 200000
+	./zad3_libshared 500000 64 s alt_swap 200000
+	./zad3_libdynamic 500000 64 s alt_swap 200000

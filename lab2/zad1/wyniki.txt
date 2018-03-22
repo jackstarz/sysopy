@@ -1,0 +1,15 @@
+generating file with 5000 records of size 4.
+  user: 0.000515, system: 0.001288
+
+copying 5000 lines from file with 4 bytes long buffer, using system functions.
+  user: 0.000243, system: 0.001011
+
+copying 5000 lines from file with 4 bytes long buffer, using library functions.
+  user: 0.000000, system: 0.000090
+
+sorting file with 5000 record of size 4, using system functions.
+  user: 2.077569, system: 8.032847
+
+sorting file with 5000 record of size 4, using library functions.
+  user: 1.079735, system: 3.008852
+

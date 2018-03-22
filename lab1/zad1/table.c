@@ -36,6 +36,10 @@ void delete_table(Table * table) {
     }
     free(table);
     table = NULL;
+  } else {
+    for (size_t b = 0; b < table->length; b++) {
+      static_table[b][0] = 0;
+    }
   }
 }
 

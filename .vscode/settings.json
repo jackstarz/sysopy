@@ -6,6 +6,7 @@
     "array": "c",
     "initializer_list": "c",
     "utility": "c",
-    "*.tcc": "c"
+    "*.tcc": "c",
+    "cstdlib": "c"
   }
 }

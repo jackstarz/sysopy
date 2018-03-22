@@ -1,58 +1,116 @@
 Creating table with parameters:
 length: 500000, block size: 32, alocation method: static
-  real: 0.361683, user: 0.021849, system: 0.014319
+  real: 0.412623, user: 0.022020, system: 0.019242
 
-Search for element with sum of element from index 2137 (3541)
-  real: 0.070559, user: 0.007035, system: 0.000021
+Search for element with sum of element from index 420 (3416)
+  real: 0.081299, user: 0.008130, system: 0.000000
 
-Element found on index: 131, with sum 3541.
-
--------------------------------------------------
-
-Creating table with parameters:
-length: 500000, block size: 32, alocation method: static
-  real: 0.377257, user: 0.021157, system: 0.016569
-
-Removing 20000 elements, then adding new ones
-  real: 0.008859, user: 0.000790, system: 0.000096
+Element found on index: 468, with sum 3416.
 
 -------------------------------------------------
 
 Creating table with parameters:
 length: 500000, block size: 32, alocation method: static
-  real: 0.354976, user: 0.021876, system: 0.013621
+  real: 0.432396, user: 0.025924, system: 0.017315
 
-Remove one element, then add new one 2137 times
-  real: 0.000959, user: 0.000059, system: 0.000037
+Removing 200000 elements, then adding new ones
+  real: 0.087973, user: 0.008751, system: 0.000046
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500000, block size: 32, alocation method: static
+  real: 0.461809, user: 0.024896, system: 0.021285
+
+Remove one element, then add new one 20000 times
+  real: 0.010426, user: 0.001023, system: 0.000020
 
 -------------------------------------------------
 
 Creating table with parameters:
 length: 500000, block size: 32, alocation method: dynamic
-  real: 0.505616, user: 0.025924, system: 0.024638
+  real: 0.520122, user: 0.026947, system: 0.025065
 
-Search for element with sum of element from index 2137 (3513)
-  real: 0.107007, user: 0.010683, system: 0.000018
+Search for element with sum of element from index 420 (3526)
+  real: 0.090555, user: 0.009043, system: 0.000013
 
-Element found on index: 165, with sum 3513.
+Element found on index: 633, with sum 3526.
 
 -------------------------------------------------
 
 Creating table with parameters:
 length: 500000, block size: 32, alocation method: dynamic
-  real: 0.477167, user: 0.032868, system: 0.014848
+  real: 0.473003, user: 0.028960, system: 0.018340
 
 Removing 20000 elements, then adding new ones
-  real: 0.014370, user: 0.001404, system: 0.000033
+  real: 0.015959, user: 0.001596, system: 0.000000
 
 -------------------------------------------------
 
 Creating table with parameters:
 length: 500000, block size: 32, alocation method: dynamic
-  real: 0.459199, user: 0.025600, system: 0.020320
+  real: 0.457430, user: 0.026025, system: 0.019718
 
-Remove one element, then add new one 2137 times
-  real: 0.001918, user: 0.000107, system: 0.000085
+Remove one element, then add new one 20000 times
+  real: 0.017916, user: 0.001214, system: 0.000577
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500, block size: 4096, alocation method: static
+  real: 0.030150, user: 0.002771, system: 0.000244
+
+Search for element with sum of element from index 420 (448573)
+  real: 0.005041, user: 0.000486, system: 0.000018
+
+Element found on index: 352, with sum 448573.
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500, block size: 4096, alocation method: static
+  real: 0.029270, user: 0.002927, system: 0.000000
+
+Removing 200 elements, then adding new ones
+  real: 0.009125, user: 0.000912, system: 0.000000
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500, block size: 4096, alocation method: static
+  real: 0.030823, user: 0.003082, system: 0.000000
+
+Remove one element, then add new one 200 times
+  real: 0.009485, user: 0.000612, system: 0.000336
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500, block size: 4096, alocation method: dynamic
+  real: 0.032251, user: 0.002943, system: 0.000282
+
+Search for element with sum of element from index 420 (448704)
+  real: 0.005636, user: 0.000564, system: 0.000000
+
+Element found on index: 486, with sum 448710.
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500, block size: 4096, alocation method: dynamic
+  real: 0.036748, user: 0.003675, system: 0.000000
+
+Removing 200 elements, then adding new ones
+  real: 0.022625, user: 0.000931, system: 0.001332
+
+-------------------------------------------------
+
+Creating table with parameters:
+length: 500, block size: 4096, alocation method: dynamic
+  real: 0.031871, user: 0.002540, system: 0.000647
+
+Remove one element, then add new one 200 times
+  real: 0.010392, user: 0.001029, system: 0.000010
 
 -------------------------------------------------
 

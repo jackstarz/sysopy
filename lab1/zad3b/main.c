@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   #endif
 
   FILE * report;
-  report = fopen("raport3a.txt", "a");
+  report = fopen("raport3b.txt", "a");
 
   Timing t = get_timing();
   srand(time(NULL));
