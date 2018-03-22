@@ -1,16 +1,17 @@
+#define _XOPEN_SOURCE
+
 #include <stdio.h>
-#include <ftw.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include <stdlib.h>
-
+#include <limits.h>
 
 int dates_compare(struct tm *, struct tm *);
 void list(const char *, struct tm, char);
-void list_nftw(const char *);
 void print_usage();
 void print_permissions(struct stat *);
 
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]) {
 
   if (argc < 2) {
     print_usage();
-    return -1;
+    return EXIT_FAILURE;
   }
 
   path = argv[1];
@@ -31,13 +32,13 @@ int main(int argc, char *argv[]) {
   if (argc < 3) {
     printf("No date mode specified\n");
     print_usage();
-    return -1;
+    return EXIT_FAILURE;
   }
 
   if (argc < 4) {
     fprintf(stderr, "No date specified.\n");
     print_usage();
-    return -1;
+    return EXIT_FAILURE;
   }
 
   strptime(argv[3], date_format, &tm);
@@ -57,10 +58,10 @@ void list(const char * path, struct tm other_date, char mode) {
 
   struct dirent * content = readdir(dir);
   struct stat st;
-  char path_long[512];
+  char path_long[PATH_MAX];
   char * date_format = "%d-%m-%Y";
 
-  while (readdir(dir) != NULL) {
+  while (dir != NULL) {
     strcpy(path_long, path);
     strcat(path_long, "/");
     strcat(path_long, content->d_name);
@@ -76,33 +77,28 @@ void list(const char * path, struct tm other_date, char mode) {
     if (strcmp(content->d_name, "..") == 0 || strcmp(content->d_name, ".") == 0) {
       content = readdir(dir);
       continue;
-    }
-
-    if (S_ISDIR(st.st_mode)) {
-      list(path_long, other_date, mode);
-    }
-
-    if (date_diff > 0 && mode == '>' || date_diff == 0 && mode == '=' || date_diff < 0 && mode == '<') {
-
-      if (S_ISDIR(st.st_mode)) {
-        continue;
+    } else {
+      if (S_ISREG(st.st_mode)) {
+        if ((date_diff > 0 && mode == '>') || (date_diff == 0 && mode == '=') || (date_diff < 0 && mode == '<')) {
+          print_permissions(&st);
+          printf(" %s", date_str); 
+          printf(" %s/%s %ld\n", path, content->d_name, st.st_size);
+        }
       }
 
-      print_permissions(&st);
-      printf(" %s", date_str); 
-      printf(" %s/%s %ld\n", path, content->d_name, st.st_size);
+      if (S_ISDIR(st.st_mode)) {
+        list(path_long, other_date, mode);
+      }
+      content = readdir(dir);
     }
-    
-    content = readdir(dir);
   }
 
   closedir(dir);
 }
 
-// potworek
 // 1 if t2 is eralier
 // 0 if equal
-// -1 if t2 is later
+// EXIT_FAILURE if t2 is later
 int dates_compare(struct tm * t1, struct tm * t2) {
   int year_diff = t2->tm_year - t1->tm_year;
   int month_diff = t2->tm_mon - t1->tm_mon;
@@ -111,17 +107,17 @@ int dates_compare(struct tm * t1, struct tm * t2) {
   if (year_diff < 0) {
     return 1;
   } else if (year_diff > 0) {
-    return -1;
+    return EXIT_FAILURE;
   } else {
     if (month_diff < 0) {
       return 1;
     } else if (month_diff > 0) {
-      return -1;
+      return EXIT_FAILURE;
     } else {
       if (day_diff < 0) {
         return 1;
       } else if (day_diff > 0) {
-        return -1;
+        return EXIT_FAILURE;
       } else {
         return 0;
       }
@@ -129,15 +125,11 @@ int dates_compare(struct tm * t1, struct tm * t2) {
   }
 }
 
-void list_nftw(const char * path) {
-  //int dir = nftw()
-  return;
-}
-
 void print_usage() {
-  printf("Usage: program path mode\n"
-            "  path - path to folder\n"
-            "  mode - date mode\n");
+  printf("Usage: program path mode date.\n"
+            "  <path> - path to folder.\n"
+            "  <mode> - date showing mode ('>', '=' or '<').\n"
+            "  <date> - date in format dd-mm-YYYY.\n");
 }
 
 void print_permissions(struct stat * st) {
