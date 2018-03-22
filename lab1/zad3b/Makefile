@@ -6,13 +6,13 @@ LIB = ../zad1
 all: static shared dynamic
 
 static:
-	$(CC) $(CFLAGS) $(SRC) -L$(LIB) -ltable -o zad3_libstatic
+	$(CC) $(CFLAGS) $(SRC) -L$(LIB) -ltable -o zad3_libstatic -O$(OLEVEL)
 
 shared:
-	$(CC) $(CFLAGS) $(SRC) -L$(LIB) -Wl,-rpath=$(LIB) -ltable -o zad3_libshared
+	$(CC) $(CFLAGS) $(SRC) -L$(LIB) -Wl,-rpath=$(LIB) -ltable -o zad3_libshared -O$(OLEVEL)
 
 dynamic:
-	$(CC) $(CFLAGS) -DDYNAMIC $(SRC) -ldl -o zad3_libdynamic
+	$(CC) $(CFLAGS) -DDYNAMIC $(SRC) -ldl -o zad3_libdynamic -O$(OLEVEL)
 
 clean:
 	rm *.o zad3_* raport3a.txt

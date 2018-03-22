@@ -5,6 +5,7 @@
     "complex": "c",
     "array": "c",
     "initializer_list": "c",
-    "utility": "c"
+    "utility": "c",
+    "*.tcc": "c"
   }
 }
