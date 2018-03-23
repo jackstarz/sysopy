@@ -1,15 +1,124 @@
+Pomiary pokazuja, ze przy mniejszych rozmiarach rekordow, uzywajac funkcji bibliotecznych zarowno kopiowanie jak
+i sortowanie rekordow odbywa sie w krotszym czasie, niz funkcji za pomoca systemowych.
+Odwrotnie jest przy wiekszych rekordach (powyzej 512kB), gdzie szybsze staja sie funkcje systemowe.
+
 generating file with 5000 records of size 4.
-  user: 0.000515, system: 0.001288
+  user: 0.000307, system: 0.001455
 
 copying 5000 lines from file with 4 bytes long buffer, using system functions.
-  user: 0.000243, system: 0.001011
+  user: 0.000273, system: 0.001598
 
 copying 5000 lines from file with 4 bytes long buffer, using library functions.
-  user: 0.000000, system: 0.000090
+  user: 0.000000, system: 0.000084
 
 sorting file with 5000 record of size 4, using system functions.
-  user: 2.077569, system: 8.032847
+  user: 2.073303, system: 7.084363
 
 sorting file with 5000 record of size 4, using library functions.
-  user: 1.079735, system: 3.008852
+  user: 1.089264, system: 2.097622
+
+generating file with 10000 records of size 4.
+  user: 0.000316, system: 0.002458
+
+copying 10000 lines from file with 4 bytes long buffer, using system functions.
+  user: 0.000287, system: 0.002259
+
+copying 10000 lines from file with 4 bytes long buffer, using library functions.
+  user: 0.000055, system: 0.000000
+
+sorting file with 10000 record of size 4, using system functions.
+  user: 10.032140, system: 31.007172
+
+sorting file with 10000 record of size 4, using library functions.
+  user: 7.020643, system: 11.026027
+
+generating file with 5000 records of size 512.
+  user: 0.033282, system: 1.024316
+
+copying 5000 lines from file with 512 bytes long buffer, using system functions.
+  user: 0.000613, system: 0.001326
+
+copying 5000 lines from file with 512 bytes long buffer, using library functions.
+  user: 0.000000, system: 0.000665
+
+sorting file with 5000 record of size 512, using system functions.
+  user: 2.073206, system: 8.089740
+
+sorting file with 5000 record of size 512, using library functions.
+  user: 2.033581, system: 4.028592
+
+generating file with 10000 records of size 512.
+  user: 0.054636, system: 2.066689
+
+copying 10000 lines from file with 512 bytes long buffer, using system functions.
+  user: 0.000000, system: 0.003345
+
+copying 10000 lines from file with 512 bytes long buffer, using library functions.
+  user: 0.000000, system: 0.001344
+
+sorting file with 10000 record of size 512, using system functions.
+  user: 10.046464, system: 36.055780
+
+sorting file with 10000 record of size 512, using library functions.
+  user: 9.019320, system: 17.063054
+
+generating file with 5000 records of size 4096.
+  user: 2.031354, system: 10.044261
+
+copying 5000 lines from file with 4096 bytes long buffer, using system functions.
+  user: 0.000000, system: 0.004289
+
+copying 5000 lines from file with 4096 bytes long buffer, using library functions.
+  user: 0.000000, system: 0.005027
+
+sorting file with 5000 record of size 4096, using system functions.
+  user: 2.067298, system: 17.000696
+
+sorting file with 5000 record of size 4096, using library functions.
+  user: 5.061195, system: 15.094052
+
+generating file with 10000 records of size 4096.
+  user: 4.062275, system: 20.090362
+
+copying 10000 lines from file with 4096 bytes long buffer, using system functions.
+  user: 0.000000, system: 0.007780
+
+copying 10000 lines from file with 4096 bytes long buffer, using library functions.
+  user: 0.000284, system: 0.008663
+
+sorting file with 10000 record of size 4096, using system functions.
+  user: 10.047270, system: 65.032845
+
+sorting file with 10000 record of size 4096, using library functions.
+  user: 22.031758, system: 63.027116
+
+generating file with 5000 records of size 8192.
+  user: 4.074865, system: 20.066917
+
+copying 5000 lines from file with 8192 bytes long buffer, using system functions.
+  user: 0.000289, system: 0.007521
+
+copying 5000 lines from file with 8192 bytes long buffer, using library functions.
+  user: 0.000925, system: 0.009204
+
+sorting file with 5000 record of size 8192, using system functions.
+  user: 2.061929, system: 24.085775
+
+sorting file with 5000 record of size 8192, using library functions.
+  user: 7.054910, system: 29.055810
+
+generating file with 10000 records of size 8192.
+  user: 9.013524, system: 41.020524
+
+copying 10000 lines from file with 8192 bytes long buffer, using system functions.
+  user: 0.000000, system: 0.011643
+
+copying 10000 lines from file with 8192 bytes long buffer, using library functions.
+  user: 0.000287, system: 0.012998
+
+sorting file with 10000 record of size 8192, using system functions.
+  user: 10.049467, system: 98.078872
+
+sorting file with 10000 record of size 8192, using library functions.
+  user: 29.025360, system: 112.079951
 

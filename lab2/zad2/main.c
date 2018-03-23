@@ -1,13 +1,13 @@
-#define _XOPEN_SOURCE
-
+#define _XOPEN_SOURCE     // strptime
+#define _GNU_SOURCE       // lstat
 #include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <limits.h>
 
 int dates_compare(struct tm *, struct tm *);
@@ -50,8 +50,13 @@ int main(int argc, char *argv[]) {
 }
 
 void list(const char * path, struct tm other_date, char mode) {
+  if (!path) {
+    fprintf(stderr, "Incorrect path specified.\n");
+    return;
+  }
+
   DIR * dir = opendir(path);
-  if (dir == NULL) {
+  if (!dir) {
     fprintf(stderr, "Cannot open folder %s.\n", path);
     return;
   }
@@ -60,17 +65,17 @@ void list(const char * path, struct tm other_date, char mode) {
   struct stat st;
   char path_long[PATH_MAX];
   char * date_format = "%d-%m-%Y";
+  struct tm * f_date = malloc(sizeof(struct tm));
 
-  while (dir != NULL) {
+  while (content != NULL) {
     strcpy(path_long, path);
     strcat(path_long, "/");
     strcat(path_long, content->d_name);
     lstat(path_long, &st);
 
-    char date_str[PATH_MAX];
-    struct tm * f_date = malloc(sizeof(struct tm));
+    char date_str[32];
     f_date = localtime(&st.st_mtime);
-    strftime(date_str, PATH_MAX, date_format, localtime(&st.st_mtime));
+    strftime(date_str, 32, date_format, localtime(&st.st_mtime));
 
     int date_diff = dates_compare(f_date, &other_date);
 
@@ -96,9 +101,9 @@ void list(const char * path, struct tm other_date, char mode) {
   closedir(dir);
 }
 
-// 1 if t2 is eralier
+// 1 if t2 is earlier
 // 0 if equal
-// EXIT_FAILURE if t2 is later
+// -1 if t2 is later
 int dates_compare(struct tm * t1, struct tm * t2) {
   int year_diff = t2->tm_year - t1->tm_year;
   int month_diff = t2->tm_mon - t1->tm_mon;
@@ -107,17 +112,17 @@ int dates_compare(struct tm * t1, struct tm * t2) {
   if (year_diff < 0) {
     return 1;
   } else if (year_diff > 0) {
-    return EXIT_FAILURE;
+    return -1;
   } else {
     if (month_diff < 0) {
       return 1;
     } else if (month_diff > 0) {
-      return EXIT_FAILURE;
+      return -1;
     } else {
       if (day_diff < 0) {
         return 1;
       } else if (day_diff > 0) {
-        return EXIT_FAILURE;
+        return -1;
       } else {
         return 0;
       }
