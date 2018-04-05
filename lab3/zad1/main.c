@@ -80,7 +80,7 @@ int list(const char * path, struct tm *other_date, char mode) {
         pid_t child = fork();
         if (child == 0) {
           list(path_long, other_date, mode);
-          exit(EXIT_SUCCESS);
+          exit(0);
         }
       }
       content = readdir(dir);
