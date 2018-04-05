@@ -1,0 +1,3 @@
+ls -asl
+cat /etc/passwd
+echo test test 123

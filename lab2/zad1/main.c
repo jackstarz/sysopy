@@ -1,7 +1,3 @@
-// Napisac czy uzywamy rand() czy /dev/random
-// TODO:
-// - pomiary
-// - sortowanie
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>

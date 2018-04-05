@@ -1,0 +1,4 @@
+/bin/ls -asl
+cat /etc/passwd
+cp main.c main_cpy.c
+echo a 123 c

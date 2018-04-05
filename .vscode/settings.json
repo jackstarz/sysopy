@@ -8,6 +8,8 @@
     "utility": "c",
     "*.tcc": "c",
     "cstdlib": "c",
-    "stat.h": "c"
+    "stat.h": "c",
+    "dirent.h": "c",
+    "errno.h": "c"
   }
 }
