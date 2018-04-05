@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
   fclose(input);
   fclose(results);
 
-  return(0);
+  return(EXIT_SUCCESS);
 }
 
 void print_usage() {

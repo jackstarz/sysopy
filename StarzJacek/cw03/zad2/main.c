@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 
     if (child == 0) {
       execvp(args[0], args);
-      exit(0);
+      exit(1);
     }
 
     wait(&status);
