@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
       }
 
       execvp(args[0], args);
-      exit(126);
+      exit(0);
     }
 
     wait(&status);
