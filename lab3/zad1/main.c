@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
   char mode;
   struct tm date;
 
-  if (argc < 4) {
+  if (argc != 4) {
     print_usage();
     return(EXIT_FAILURE);
   }
