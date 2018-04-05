@@ -19,7 +19,7 @@ void end_timing(Timing *);
 void save_timing(FILE *, Timing *);
 
 int main(int argc, char *argv[]) {
-  if (argc < 4) {
+  if (argc != 4) {
     print_usage();
     return(EXIT_FAILURE);
   }
