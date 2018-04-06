@@ -19,7 +19,7 @@ void end_timing(Timing *);
 void save_timing(FILE *, Timing *);
 
 int main(int argc, char *argv[]) {
-  if (argc < 4) {
+  if (argc != 4) {
     print_usage();
     return(EXIT_FAILURE);
   }
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
       }
 
       execvp(args[0], args);
-      exit(126);
+      exit(1);
     }
 
     wait(&status);
@@ -86,6 +86,8 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "%s: failed to execute\n", args[0]);
       return(EXIT_FAILURE);
     }
+
+    free(args);
 
     fprintf(results, "%s\n", command);
     end_timing(&t);
@@ -95,7 +97,7 @@ int main(int argc, char *argv[]) {
   fclose(input);
   fclose(results);
 
-  return(0);
+  return(EXIT_SUCCESS);
 }
 
 void print_usage() {

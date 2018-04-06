@@ -87,6 +87,8 @@ int main(int argc, char *argv[]) {
       return(EXIT_FAILURE);
     }
 
+    free(args);
+
     fprintf(results, "%s\n", command);
     end_timing(&t);
     save_timing(results, &t);
