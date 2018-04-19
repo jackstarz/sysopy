@@ -10,6 +10,10 @@
     "cstdlib": "c",
     "stat.h": "c",
     "dirent.h": "c",
-    "errno.h": "c"
+    "errno.h": "c",
+    "time.h": "c",
+    "signal.h": "c",
+    "types.h": "c",
+    "stdlib.h": "c"
   }
 }

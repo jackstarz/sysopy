@@ -1,0 +1,2 @@
+cat /etc/passwd | head -n 5 | wc -l 
+ls -asl | grep jacek

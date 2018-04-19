@@ -49,7 +49,6 @@ int main(int argc, char *argv[]) {
     wait(&status);
     if (status) {
       fprintf(stderr, "%s: failed to execute\n", args[0]);
-      return(EXIT_FAILURE);
     } 
 
     free(args);
