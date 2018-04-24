@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (k = 0; k < n; ++k) {
+      // jesli jest co pipe'owac
       if (k > 1) {
         close(pipefd[k % 2][0]);
         close(pipefd[k % 2][1]);
@@ -63,6 +64,7 @@ int main(int argc, char *argv[]) {
     close(pipefd[k % 2][0]);
     close(pipefd[k % 2][1]);
   
+    // loops until there are no more children
     while(wait(NULL) > 0) {};
   }
 
