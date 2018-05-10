@@ -5,7 +5,11 @@
 #include <signal.h>
 #include <string.h>
 #include <time.h>
+#include <fcntl.h>
+#include <mqueue.h>
+
 #include <sys/msg.h>
+#include <sys/stat.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
 
@@ -20,17 +24,18 @@ void sigint_handler(int);
 void strrev(char *);
 
 int main(void) {
-  int id = 0;  
-  key_t pub_key, priv_key;
-  char *home = getenv("HOME");
+  int id = 0;
+  int quit = 0;
   mymsg msg;
   char *time_str;
   time_t curr_time;
-  int quit = 0;
+  char client_name[20];
   
-  pub_key = ftok(home, PUB_Q);
-
-  if ((pub_queue = msgget(pub_key, 0666 | IPC_CREAT)) == -1) {
+  struct mq_attr queue_attr;
+  queue_attr.mq_maxmsg = QUEUE_SIZE;
+  queue_attr.mq_msgsize = msgsz;
+  
+  if ((pub_queue = mq_open(server_path, O_RDONLY | O_CREAT | O_EXCL, 0666, &queue_attr)) == -1) {
     perror("public queue");
     exit(EXIT_FAILURE);
   }
@@ -41,7 +46,15 @@ int main(void) {
   signal(SIGINT, sigint_handler);
   atexit(remove_queue);
 
-  while (msgrcv(pub_queue, &msg, msgsz, 0, (quit ? IPC_NOWAIT : 0)) >= 0) {
+  while (1) {
+    if (quit == 1) {
+      mq_getattr(pub_queue, &queue_attr);
+      if (queue_attr.mq_curmsgs == 0) {
+        break;
+      }
+    }
+
+    mq_receive(pub_queue, (char*) &msg, msgsz, NULL);
 
     switch(msg.type) {
       case INIT:
@@ -50,14 +63,17 @@ int main(void) {
           continue;
         }
         printf("INIT request from: %d\n", msg.clientpid);
-        priv_key = atoi(msg.text);
-        
-        if ((priv_queue = msgget(priv_key, 0666)) == -1) {
-          perror("MSGGET"); exit(EXIT_FAILURE);
+        sprintf(client_name, "/%d", msg.clientpid);
+
+        if ((priv_queue = mq_open(client_name, O_WRONLY)) == -1) {
+          perror("priv queue");
+          exit(EXIT_FAILURE);
         }
 
         clients[id] = priv_queue;
         msg.clientid = id;
+        printf("sending ID with id = %d\n", id);
+
         id++;
         break;
 
@@ -76,7 +92,6 @@ int main(void) {
         if (operation == NULL || s2 == NULL || s2 == NULL) {
           printf("Error while parsing arguments.\n");
           strcpy(msg.text, "ERR");
-          msgsnd(clients[msg.clientid], &msg, msgsz, 0);
           continue;
         }
 
@@ -96,7 +111,6 @@ int main(void) {
         } else {
           printf("Unknown operation.\n");
           strcpy(msg.text, "ERR");
-          msgsnd(clients[msg.clientid], &msg, msgsz, 0);
         }
 
         snprintf(msg.text, MSG_LEN, "%d", result);
@@ -119,14 +133,15 @@ int main(void) {
         break;
     }
 
-    msgsnd(clients[msg.clientid], &msg, msgsz, 0);
+    mq_send(priv_queue, (char*) &msg, msgsz, 1);
   }
 
   exit(EXIT_SUCCESS);
 }
 
-void remove_queue(void) {
-    msgctl(pub_queue, IPC_RMID, NULL);
+void remove_queue() {
+    mq_close(pub_queue);
+    mq_unlink("/server");
 }
 
 void sigint_handler(int signum) {

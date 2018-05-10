@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -std=c99
+CFLAGS = -Wall -std=c99 -lrt
 
 make:
 	$(CC) $(CFLAGS) server.c -o server

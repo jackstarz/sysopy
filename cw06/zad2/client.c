@@ -5,8 +5,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <mqueue.h>
+
 #include <sys/msg.h>
 #include <sys/ipc.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include "ipc_utility.h"
@@ -17,37 +21,43 @@ void remove_queue(void);
 void sigint_handler(int);
 
 int main(void) {
-  key_t pub_key, priv_key;
   pid_t pid = getpid();
-  char *home = getenv("HOME");
   int id;
   char buf[MSG_LEN];
   mymsg msg;
   char *line_buf;
   size_t line_n = MSG_LEN;
-
-  pub_key = ftok(home, PUB_Q);
-  priv_key = ftok(home, pid);
+  char client_name[20];
 
   atexit(remove_queue);  
   signal(SIGINT, sigint_handler);
 
-  if ((pub_queue = msgget(pub_key, 0666)) == -1) {
+  if ((pub_queue = mq_open(server_path, O_WRONLY)) == -1) {
     perror("public queue");
     exit(EXIT_FAILURE);
   }
 
-  if ((priv_queue = msgget(priv_key, 0666 | IPC_CREAT)) == -1) {
+  struct mq_attr queue_attr;
+  queue_attr.mq_maxmsg = QUEUE_SIZE;
+  queue_attr.mq_msgsize = msgsz;
+
+  sprintf(client_name, "/%d", pid);
+
+  if ((priv_queue = mq_open(client_name, O_RDONLY | O_CREAT | O_EXCL, 0666, &queue_attr)) == -1) {
     perror("private queue");
     exit(EXIT_FAILURE);
   }
 
-  snprintf(msg.text, MSG_LEN, "%d", priv_key);
   msg.type = INIT;
   msg.clientpid = pid;
-  msgsnd(pub_queue, &msg, msgsz, 0);
+  if (mq_send(pub_queue, (char*) &msg, msgsz, 1) == -1) {
+    printf("failed to init\n");
+  }
 
-  msgrcv(priv_queue, &msg, msgsz, INIT, 0);
+  if (mq_receive(priv_queue, (char*) &msg, msgsz, NULL) == -1) {
+    printf("Failed to get INIt response.\n");
+  }
+
   id = msg.clientid;
 
   while (1) {
@@ -81,7 +91,7 @@ int main(void) {
       strncpy(msg.text, line_buf, MSG_LEN);
     } else if (strcmp(buf, "END") == 0) {
       msg.type = END;
-      msgsnd(pub_queue, &msg, msgsz, 0);
+      mq_send(pub_queue, (char*) &msg, msgsz, 1);
       exit(EXIT_SUCCESS);
     } else {
       fprintf(stderr, "Unknown command.\n");
@@ -90,9 +100,10 @@ int main(void) {
 
     msg.clientid = id;
     msg.clientpid = pid;
-    msgsnd(pub_queue, &msg, msgsz, 0);
 
-    if (msgrcv(priv_queue, &msg, msgsz, msg.type, 0) > 0) {
+    mq_send(pub_queue, (char*) &msg, msgsz, 1);
+
+    if (mq_receive(priv_queue, (char*) &msg, msgsz, NULL) != -1) {
       printf("response: %s\n", msg.text);
     }
   }
@@ -101,7 +112,8 @@ int main(void) {
 }
 
 void remove_queue() {
-    msgctl(priv_queue, IPC_RMID, NULL);
+    mq_close(priv_queue);
+    mq_unlink("/client");
 }
 
 void sigint_handler(int signum) {
