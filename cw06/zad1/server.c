@@ -74,8 +74,7 @@ int main(void) {
         char *s2 = strtok(NULL, " ");
 
         if (operation == NULL || s2 == NULL || s2 == NULL) {
-          printf("Error while parsing arguments.\n");
-          strcpy(msg.text, "ERR");
+          strcpy(msg.text, "Parsing error");
           msgsnd(clients[msg.clientid], &msg, msgsz, 0);
           continue;
         }
@@ -94,8 +93,7 @@ int main(void) {
         } else if (strcmp(operation, "MUL") == 0) {
           result = a * b;
         } else {
-          printf("Unknown operation.\n");
-          strcpy(msg.text, "ERR");
+          strcpy(msg.text, "Unknown operation");
           msgsnd(clients[msg.clientid], &msg, msgsz, 0);
         }
 

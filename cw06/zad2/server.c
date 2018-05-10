@@ -72,7 +72,6 @@ int main(void) {
 
         clients[id] = priv_queue;
         msg.clientid = id;
-        printf("sending ID with id = %d\n", id);
 
         id++;
         break;
@@ -90,8 +89,8 @@ int main(void) {
         char *s2 = strtok(NULL, " ");
 
         if (operation == NULL || s2 == NULL || s2 == NULL) {
-          printf("Error while parsing arguments.\n");
-          strcpy(msg.text, "ERR");
+          strcpy(msg.text, "Parsing error");
+          mq_send(priv_queue, (char*) &msg, msgsz, 1);
           continue;
         }
 
@@ -109,8 +108,9 @@ int main(void) {
         } else if (strcmp(operation, "MUL") == 0) {
           result = a * b;
         } else {
-          printf("Unknown operation.\n");
-          strcpy(msg.text, "ERR");
+          strcpy(msg.text, "Unknown operation");
+          mq_send(priv_queue, (char*) &msg, msgsz, 1);
+          continue;
         }
 
         snprintf(msg.text, MSG_LEN, "%d", result);
