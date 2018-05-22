@@ -7,14 +7,16 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <semaphore.h>
 #include <sys/sem.h>
 #include <sys/shm.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 
-#define BARBER_PATH     getenv("HOME")
-#define BARBER_ID       0x1337
+#define BARBER_PATH     "/barber"
 #define MAX_QUEUE_SIZE  128
 
 typedef enum barber_state_t
@@ -94,30 +96,20 @@ dequeue(Barbershop *bs)
 }
 
 void
-take_semaphore(int sem_id)
+take_semaphore(sem_t *sem_id)
 {
-  struct sembuf sem;
-  sem.sem_num = 0;
-  sem.sem_op = -1;
-  sem.sem_flg = 0;
-
-  if (semop(sem_id, &sem, 1) == -1)
+  if (sem_wait(sem_id) == -1)
   {
-    perror("IPC error: semop (take)"); exit(1);
+    perror("IPC error: sem_wait"); exit(1);
   }
 }
 
 void
-give_semaphore(int sem_id)
+give_semaphore(sem_t *sem_id)
 {
-  struct sembuf sem;
-  sem.sem_num = 0;
-  sem.sem_op = 1;
-  sem.sem_flg = 0;
-
-  if (semop(sem_id, &sem, 1) == -1)
+  if (sem_post(sem_id) == -1)
   {
-    perror("IPC error: semop (give)"); exit(1);
+    perror("IPC error: sem_post"); exit(1);
   }
 }
 

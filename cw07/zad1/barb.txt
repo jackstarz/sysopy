@@ -1,0 +1,41 @@
+607340: barber woke up!
+607534: started cutting client 2019
+607536: finished cutting client 2019
+607737: client 2019 invited
+607900: started cutting client 2019
+607902: finished cutting client 2019
+608186: client 2020 invited
+608293: started cutting client 2020
+608295: finished cutting client 2020
+608562: barber fell asleep
+608720: barber woke up!
+609027: started cutting client 2020
+609029: finished cutting client 2020
+609166: client 2020 invited
+609274: started cutting client 2020
+609276: finished cutting client 2020
+609408: client 2020 invited
+609568: started cutting client 2020
+609570: finished cutting client 2020
+610134: client 2020 invited
+610201: started cutting client 2020
+610202: finished cutting client 2020
+610423: barber fell asleep
+611077: barber woke up!
+611202: started cutting client 2023
+611204: finished cutting client 2023
+611420: client 2023 invited
+611539: started cutting client 2023
+611540: finished cutting client 2023
+611731: client 2023 invited
+611796: started cutting client 2023
+611798: finished cutting client 2023
+611878: barber fell asleep
+611940: barber woke up!
+612683: started cutting client 2023
+612685: finished cutting client 2023
+612933: barber fell asleep
+613061: barber woke up!
+613293: started cutting client 2023
+613295: finished cutting client 2023
+613326: barber fell asleep

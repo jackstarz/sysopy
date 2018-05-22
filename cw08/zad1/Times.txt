@@ -1,0 +1,40 @@
+Image size: 512x512
+Filter size: 25
+Number of threads: 1
+processing time: 1.688503s
+
+Image size: 512x512
+Filter size: 25
+Number of threads: 2
+processing time: 0.850823s
+
+Image size: 512x512
+Filter size: 25
+Number of threads: 4
+processing time: 0.437807s
+
+Image size: 512x512
+Filter size: 25
+Number of threads: 8
+processing time: 0.438509s
+
+Image size: 512x512
+Filter size: 50
+Number of threads: 1
+processing time: 6.602375s
+
+Image size: 512x512
+Filter size: 50
+Number of threads: 2
+processing time: 3.380218s
+
+Image size: 512x512
+Filter size: 50
+Number of threads: 4
+processing time: 1.728748s
+
+Image size: 512x512
+Filter size: 50
+Number of threads: 8
+processing time: 1.742425s
+

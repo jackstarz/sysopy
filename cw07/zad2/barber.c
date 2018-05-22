@@ -2,7 +2,7 @@
 
 Barbershop  *bs;
 int         shm_id;
-int         sem_id;
+sem_t       *sem_id;
 
 void init(int);
 void remove_ipcs();
@@ -70,31 +70,24 @@ init(int chairs_count)
   signal(SIGINT, sig_handle);
   signal(SIGTERM, sig_handle);
 
-  key_t barber_key;
-
-  if ((barber_key = ftok(BARBER_PATH, BARBER_ID)) == (key_t) -1)
+  if ((shm_id = shm_open(BARBER_PATH, O_RDWR | O_CREAT | O_EXCL, S_IRWXU | S_IRWXG)) == -1)
   {
-    perror("IPC error: ftok"); exit(1);
+    perror("IPC error: shm_open"); exit(1);
   }
 
-  if ((shm_id = shmget(barber_key, sizeof(Barbershop), 0666 | IPC_CREAT)) == -1)
+  if (ftruncate(shm_id,  sizeof(Barbershop)) ==  -1)
   {
-    perror("IPC error: shmget"); exit(1);
+    perror("IPC error: ftruncate"); exit(1);
   }
 
-  if ((bs = shmat(shm_id, NULL, 0)) == (void *) -1)
+  if ((bs = mmap(NULL, sizeof(Barbershop), PROT_READ | PROT_WRITE, MAP_SHARED, shm_id, 0)) == (void *) -1)
   {
-    perror("IPC error: shmat"); exit(1);
+    perror("IPC error: mmap"); exit(1);
   }
 
-  if ((sem_id = semget(barber_key, 1, 0666 | IPC_CREAT)) == -1)
+  if ((sem_id = sem_open(BARBER_PATH, O_WRONLY | O_CREAT | O_EXCL, S_IRWXU | S_IRWXG, 0)) == SEM_FAILED)
   {
-    perror("IPC error: semget"); exit(1);
-  }
-
-  if (semctl(sem_id, 0, SETVAL, 0) == -1)
-  {
-    perror("IPC error: semctl (SETVAL)"); exit(1);
+    perror("IPC error: sem_open"); exit(1);
   }
 
   bs->barber_state = SLEEPING;
@@ -109,13 +102,12 @@ remove_ipcs()
 {
   if (sem_id != 0)
   {
-    semctl(sem_id, 0, IPC_RMID);
+    sem_close(sem_id);
   }
 
   if (shm_id != 0)
   {
-    shmdt(bs);
-    shmctl(shm_id, IPC_RMID, NULL);
+    shm_unlink(BARBER_PATH);
   }
 }
 

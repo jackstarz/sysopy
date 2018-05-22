@@ -1,0 +1,30 @@
+565316: barber woke up by client 2122
+565859: client 2122 took a seat
+566127: client 2122 shaved
+566163: client 2122 enetered the queue
+566234: client 2122 took a seat
+566664: client 2122 shaved
+566724: client 2122 enetered the queue
+566968: client 2122 took a seat
+567260: client 2122 shaved
+567552: client 2122 enetered the queue
+568494: client 2122 took a seat
+568751: client 2122 shaved
+568905: client 2122 enetered the queue
+569199: client 2122 took a seat
+569712: client 2122 shaved
+569363: client 2126 enetered the queue
+570518: client 2126 took a seat
+571001: client 2126 shaved
+571011: client 2126 enetered the queue
+572272: client 2126 took a seat
+573109: client 2126 shaved
+573774: barber woke up by client 2126
+574245: client 2126 took a seat
+574402: client 2126 shaved
+574408: client 2126 enetered the queue
+574756: client 2126 took a seat
+575025: client 2126 shaved
+575047: client 2126 enetered the queue
+575153: client 2126 took a seat
+575727: client 2126 shaved
