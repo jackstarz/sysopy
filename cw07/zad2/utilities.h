@@ -25,21 +25,21 @@ typedef enum barber_state_t
   AWAKE,
   READY,
   FREE,
-  BUSY,
+  BUSY
 } BarberState;
 
 typedef enum client_state_t
 {
   NEW,
   INVITED,
-  DONE,
+  DONE
 } ClientState;
+
 
 typedef struct barberhop_t
 {
   BarberState   barber_state;
-  int           head;
-  int           tail;
+  int           clients_count;
   int           chairs_count;
   pid_t         current_client;
   pid_t         clients_queue[MAX_QUEUE_SIZE];
@@ -56,47 +56,36 @@ get_time()
 int
 queue_empty(Barbershop *bs)
 {
-  return (bs->head == -1) && (bs->tail == -1);
+  return bs->clients_count == 0;
 }
 
 int
 queue_full(Barbershop *bs)
 {
-  return bs->head == (bs->tail + 1) % bs->chairs_count;
+  return bs->clients_count == bs->chairs_count;
 }
 
 void
 enqueue(Barbershop *bs, pid_t client)
 {
-  if (queue_empty(bs))
-  {
-    bs->head = 0;
-    bs->tail = 0;
-  }
-  else
-  {
-    bs->tail = (bs->tail + 1) & bs->chairs_count;
-  }
-
-  bs->clients_queue[bs->tail] = getpid();
+  bs->clients_queue[bs->clients_count] = client;
+  ++bs->clients_count;
 }
 
 void
 dequeue(Barbershop *bs)
 {
-  if (bs->head == bs->tail)
+  for (int i = 0; i < bs->clients_count - 1; ++i)
   {
-    bs->head = -1;
-    bs->tail = -1;
+    bs->clients_queue[i] = bs->clients_queue[i + 1];
   }
-  else
-  {
-    bs->head = (bs->head + 1) % bs->chairs_count;
-  }
+
+  bs->clients_queue[bs->clients_count - 1] = 0;
+  --bs->clients_count;
 }
 
 void
-take_semaphore(sem_t *sem_id)
+unlock_semaphore(sem_t *sem_id)
 {
   if (sem_wait(sem_id) == -1)
   {
@@ -105,7 +94,7 @@ take_semaphore(sem_t *sem_id)
 }
 
 void
-give_semaphore(sem_t *sem_id)
+lock_semaphore(sem_t *sem_id)
 {
   if (sem_post(sem_id) == -1)
   {

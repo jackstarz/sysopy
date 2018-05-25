@@ -22,11 +22,11 @@ main(int argc, char *argv[])
 
   init(chairs_count);
 
-  give_semaphore(sem_id);
+  lock_semaphore(sem_id);
 
   while (1)
   {
-    take_semaphore(sem_id);
+    unlock_semaphore(sem_id);
 
     switch(bs->barber_state)
     {
@@ -36,8 +36,9 @@ main(int argc, char *argv[])
           printf("%ld: barber fell asleep\n", get_time());
           bs->barber_state = SLEEPING;
         } else {
-          printf("%ld: client %d invited\n", get_time(), bs->clients_queue[bs->head]);
-          bs->current_client = bs->clients_queue[bs->head];
+          pid_t current_client = bs->clients_queue[0];
+          bs->current_client = current_client;
+          printf("%ld: client %d invited\n", get_time(), current_client);
           bs->barber_state = READY;
         }
         break;
@@ -58,7 +59,7 @@ main(int argc, char *argv[])
       default:
         break;
     }
-    give_semaphore(sem_id);
+    lock_semaphore(sem_id);
   }
 
 }
@@ -75,7 +76,7 @@ init(int chairs_count)
     perror("IPC error: shm_open"); exit(1);
   }
 
-  if (ftruncate(shm_id,  sizeof(Barbershop)) ==  -1)
+  if (ftruncate(shm_id, sizeof(Barbershop)) ==  -1)
   {
     perror("IPC error: ftruncate"); exit(1);
   }
@@ -91,8 +92,7 @@ init(int chairs_count)
   }
 
   bs->barber_state = SLEEPING;
-  bs->head = -1;
-  bs->tail = -1;
+  bs->clients_count = 0;
   bs->chairs_count = chairs_count;
   bs->current_client = 0;
 }
@@ -103,10 +103,12 @@ remove_ipcs()
   if (sem_id != 0)
   {
     sem_close(sem_id);
+    sem_unlink(BARBER_PATH);
   }
 
   if (shm_id != 0)
   {
+    munmap(bs, sizeof(Barbershop));
     shm_unlink(BARBER_PATH);
   }
 }

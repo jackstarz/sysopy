@@ -1,4 +1,4 @@
-#include "utilities.h"
+#mutextinclude "utilities.h"
 
 Barbershop  *bs;
 ClientState client_state;
@@ -6,9 +6,8 @@ int         shm_id;
 sem_t       *sem_id;
 
 void        init();
-int         run_client();
+void        run_clients(int);
 void        take_seat();
-ClientState update_state();
 
 int
 main(int argc, char *argv[])
@@ -29,11 +28,7 @@ main(int argc, char *argv[])
   {
     if (!(fork()))
     {
-      int haircuts = 0;
-      while (haircuts < haircuts_count)
-      {
-        haircuts += run_client();
-      }
+      run_clients(haircuts_count);
       exit(0);
     }
   }
@@ -65,24 +60,25 @@ init()
   }
 }
 
-int
-run_client()
+void
+run_clients(int haircuts_count)
 {
+  int   haircuts = 0;
   pid_t pid = getpid();
-  client_state = NEW;
 
-  take_semaphore(sem_id);
+  while (haircuts < haircuts_count)
+  {
+    unlock_semaphore(sem_id);
+    client_state = NEW;
 
-  if (bs->barber_state == SLEEPING)
-  {
-    printf("%ld: barber woke up by client %d\n", get_time(), pid);
-    bs->barber_state = AWAKE;
-    take_seat();
-    bs->barber_state = BUSY;
-  }
-  else
-  {
-    if (!queue_full(bs))
+    if (bs->barber_state == SLEEPING)
+    {
+      printf("%ld: barber woke up by client %d\n", get_time(), pid);
+      bs->barber_state = AWAKE;
+      take_seat();
+      bs->barber_state = BUSY;
+    }
+    else if (!queue_full(bs))
     {
       enqueue(bs, pid);
       printf("%ld: client %d enetered the queue\n", get_time(), pid);
@@ -90,36 +86,38 @@ run_client()
     else
     {
       printf("%ld: client %d could not eneter the queue\n", get_time(), pid);
-      give_semaphore(sem_id);
-      return 0;
+      lock_semaphore(sem_id);
+      return;
     }
-  }
 
-  give_semaphore(sem_id);
+    lock_semaphore(sem_id);
 
-  while (client_state < INVITED)
-  {
-    take_semaphore(sem_id);
-    if ((client_state = update_state()) == INVITED)
+    while (client_state != INVITED)
     {
-      take_seat();
-      bs->barber_state = BUSY;
+      unlock_semaphore(sem_id);
+      if (bs->current_client == pid)
+      {
+        client_state = INVITED;
+        take_seat();
+        bs->barber_state = BUSY;
+      }
+      lock_semaphore(sem_id);
     }
-    give_semaphore(sem_id);
-  }
 
-  while (client_state < DONE)
-  {
-    take_semaphore(sem_id);
-    if ((client_state = update_state()) == DONE)
+    while (client_state != DONE)
     {
-      printf("%ld: client %i shaved\n", get_time(), pid);
-      bs->barber_state = FREE;
+      unlock_semaphore(sem_id);
+      if (bs->current_client != pid)
+      {
+        client_state = DONE;
+        printf("%ld: client %i shaved\n", get_time(), pid);
+        bs->barber_state = FREE;
+        ++haircuts;
+      }
+      lock_semaphore(sem_id);
     }
-    give_semaphore(sem_id);
   }
-
-  return 1;  
+  printf("%ld: clinet %d left barbershop after %d cuts done\n", get_time(), pid, haircuts);
 }
 
 void
@@ -135,33 +133,16 @@ take_seat()
   {
     while (1)
     {
-      give_semaphore(sem_id);
-      take_semaphore(sem_id);
+      lock_semaphore(sem_id);
+      unlock_semaphore(sem_id);
       if (bs->barber_state == READY)
       {
         break;
       }
     }
     client_state = INVITED;
-    bs->current_client = pid;
   }
+
+  bs->current_client = pid;  
   printf("%ld: client %d took a seat\n", get_time(), pid);
-}
-
-ClientState
-update_state()
-{
-  pid_t pid = getpid();
-
-  if (bs->current_client == pid)
-  {
-    return INVITED;
-  }
-
-  if (client_state == INVITED && bs->current_client != pid)
-  {
-    return DONE;
-  }
-
-  return NEW;
 }
