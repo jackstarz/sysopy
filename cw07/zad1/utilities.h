@@ -82,7 +82,7 @@ dequeue(Barbershop *bs)
 }
 
 void
-unlock_semaphore(int sem_id)
+lock_semaphore(int sem_id)
 {
   struct sembuf sem;
   sem.sem_num = 0;
@@ -91,12 +91,12 @@ unlock_semaphore(int sem_id)
 
   if (semop(sem_id, &sem, 1) == -1)
   {
-    perror("IPC error: semop (take)"); exit(1);
+    perror("IPC error: semop (lock)"); exit(1);
   }
 }
 
 void
-lock_semaphore(int sem_id)
+unlock_semaphore(int sem_id)
 {
   struct sembuf sem;
   sem.sem_num = 0;
@@ -105,7 +105,7 @@ lock_semaphore(int sem_id)
 
   if (semop(sem_id, &sem, 1) == -1)
   {
-    perror("IPC error: semop (give)"); exit(1);
+    perror("IPC error: semop (unlock)"); exit(1);
   }
 }
 

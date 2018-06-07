@@ -33,7 +33,7 @@ main(int argc, char *argv[])
     }
   }
 
-  while (wait(0)) if (errno != ECHILD) break;
+  while (wait(NULL) > 0) { };
 }
 
 void
@@ -70,8 +70,9 @@ run_clients(int haircuts_count)
 
   while (haircuts < haircuts_count)
   {
-    unlock_semaphore(sem_id);
     client_state = NEW;
+    
+    lock_semaphore(sem_id);
 
     if (bs->barber_state == SLEEPING)
     {
@@ -80,35 +81,35 @@ run_clients(int haircuts_count)
       take_seat();
       bs->barber_state = BUSY;
     }
-    else if (!queue_full(bs))
+    else if (queue_full(bs))
+    {
+      printf("%ld: client %d could not eneter the queue\n", get_time(), pid);
+      unlock_semaphore(sem_id);
+      return;
+    }
+    else
     {
       enqueue(bs, pid);
       printf("%ld: client %d enetered the queue\n", get_time(), pid);
     }
-    else
-    {
-      printf("%ld: client %d could not eneter the queue\n", get_time(), pid);
-      lock_semaphore(sem_id);
-      return;
-    }
 
-    lock_semaphore(sem_id);
+    unlock_semaphore(sem_id);
 
     while (client_state != INVITED)
     {
-      unlock_semaphore(sem_id);
+      lock_semaphore(sem_id);
       if (bs->current_client == pid)
       {
         client_state = INVITED;
         take_seat();
         bs->barber_state = BUSY;
       }
-      lock_semaphore(sem_id);
+      unlock_semaphore(sem_id);
     }
 
     while (client_state != DONE)
     {
-      unlock_semaphore(sem_id);
+      lock_semaphore(sem_id);
       if (bs->current_client != pid)
       {
         client_state = DONE;
@@ -116,10 +117,10 @@ run_clients(int haircuts_count)
         bs->barber_state = FREE;
         ++haircuts;
       }
-      lock_semaphore(sem_id);
+      unlock_semaphore(sem_id);
     }
   }
-  printf("%ld: clinet %d left barbershop after %d cuts done\n", get_time(), pid, haircuts);
+  printf("%ld: client %d left barbershop after %d cuts done\n", get_time(), pid, haircuts);
 }
 
 void
@@ -135,8 +136,8 @@ take_seat()
   {
     while (1)
     {
-      lock_semaphore(sem_id);
       unlock_semaphore(sem_id);
+      lock_semaphore(sem_id);
       if (bs->barber_state == READY)
       {
         break;

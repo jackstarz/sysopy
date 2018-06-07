@@ -1,0 +1,8 @@
+P 100
+K 5
+N 50
+FILE ../quo_vadis.txt
+L 10
+SEARCH <
+VERBOSE 0
+NK 1

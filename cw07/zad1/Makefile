@@ -6,4 +6,4 @@ make:
 	$(CC) clients.c -o clients $(CFLAGS)
 
 clean:
-	rm {barber,clients} 2> /dev/null
+	rm barber clients

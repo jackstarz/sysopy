@@ -38,3 +38,18 @@ Filter size: 50
 Number of threads: 8
 processing time: 1.742425s
 
+Image size: 512x512
+Filter size: 25
+Number of threads: 8
+processing time: 0.444625s
+
+Image size: 512x512
+Filter size: 50
+Number of threads: 8
+processing time: 1.746376s
+
+Image size: 512x512
+Filter size: 50
+Number of threads: 8
+processing time: 1.778318s
+

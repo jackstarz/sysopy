@@ -6,6 +6,7 @@
 #include <math.h>
 #include <memory.h>
 #include <time.h>
+#include <stdint.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -13,12 +14,6 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
 typedef unsigned char uint8;
-
-typedef struct arg_t
-{
-  int start;
-  int end;
-} Arg;
 
 uint8   *input_img;
 uint8   *output_img;
@@ -58,13 +53,12 @@ main(int argc, char *argv[])
 
   pixels_count = (int) round(img_width * img_height / threads_count);
 
-  Arg args[threads_count];
+  int args[threads_count][2];
   for (int i = 0; i < threads_count; ++i)
   {
-    args[i].start = i * pixels_count;
-    args[i].end = min(args[i].start + pixels_count, img_width * img_height);
+    args[i][0] = i * pixels_count;
+    args[i][1] = min(args[i][0] + pixels_count, img_width * img_height);
   }
-
 
   time_start = get_time();
 
@@ -112,7 +106,7 @@ load_image(char *path)
   {
     for (int j = 0; j < img_width; ++j)
     {
-      fscanf(image, "%d", &input_img[i * img_width + j]);
+      fscanf(image, "%d", (int *) &input_img[i * img_width + j]);
     }
   }
 
@@ -172,9 +166,9 @@ filter_image(void *arg_void)
   int x;
   int y;
 
-  Arg *arg = (Arg *) arg_void;
+  int * arg = (int *) arg_void;
 
-  for (int i = arg->start; i < arg->end; ++i)
+  for (int i = *arg; i < *(arg + 1); ++i)
   {
     x = i / img_width;
     y = i % img_width;
@@ -210,12 +204,14 @@ save_image(char *path)
   fclose(image);
 }
 
-long get_time() {
-    struct timeval time;
-    gettimeofday(&time, 0);
-    long result = (long) time.tv_sec * 1000000 + (long) time.tv_usec;
+long
+get_time()
+{
+  struct timeval time;
+  gettimeofday(&time, 0);
+  long result = (long) time.tv_sec * 1000000 + (long) time.tv_usec;
 
-    return result;
+  return result;
 }
 
 void

@@ -22,11 +22,11 @@ main(int argc, char *argv[])
 
   init(chairs_count);
 
-  lock_semaphore(sem_id);
+  unlock_semaphore(sem_id);
 
   while (1)
   {
-    unlock_semaphore(sem_id);
+    lock_semaphore(sem_id);
 
     switch(bs->barber_state)
     {
@@ -59,7 +59,7 @@ main(int argc, char *argv[])
       default:
         break;
     }
-    lock_semaphore(sem_id);
+    unlock_semaphore(sem_id);
   }
 
 }
@@ -107,16 +107,9 @@ init(int chairs_count)
 void
 remove_ipcs()
 {
-  if (sem_id != 0)
-  {
-    semctl(sem_id, 0, IPC_RMID);
-  }
-
-  if (shm_id != 0)
-  {
-    shmdt(bs);
-    shmctl(shm_id, IPC_RMID, NULL);
-  }
+  semctl(sem_id, 0, IPC_RMID);
+  shmdt(bs);
+  shmctl(shm_id, IPC_RMID, NULL);
 }
 
 void

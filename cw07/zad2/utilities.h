@@ -85,7 +85,7 @@ dequeue(Barbershop *bs)
 }
 
 void
-unlock_semaphore(sem_t *sem_id)
+lock_semaphore(sem_t *sem_id)
 {
   if (sem_wait(sem_id) == -1)
   {
@@ -94,7 +94,7 @@ unlock_semaphore(sem_t *sem_id)
 }
 
 void
-lock_semaphore(sem_t *sem_id)
+unlock_semaphore(sem_t *sem_id)
 {
   if (sem_post(sem_id) == -1)
   {
